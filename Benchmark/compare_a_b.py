@@ -22,8 +22,20 @@ class Compare(object):
         """
         run_times_results = self.run_times()
 
-        formatted_response = """
-        Comparing {a_name} to {b_name}...
+        formatted_response = "Comparing {a_name} to {b_name}...".format(
+            a_name=self.a_name,
+            b_name=self.b_name)
+
+        if not self.__assert_equal():
+            formatted_response += """{a_name} does not equal {b_name}!\n""" \
+                                  """Comparison functions must return the """ \
+                                  """same data.""".format(a_name=self.a_name,
+                                                          b_name=self.b_name)
+
+            return formatted_response
+
+        formatted_response = formatted_response + """
+        
         {a_name} ran in {a_time} seconds.
         {b_name} ran in {b_time} seconds.
         
@@ -40,6 +52,10 @@ class Compare(object):
         )
 
         return formatted_response
+
+    def __assert_equal(self):
+        # Assure both functions are equal (assuming deterministic...for now)
+        return self.a() == self.b()
 
     def __winner(self, a_run_time, b_run_time):
         if a_run_time == b_run_time:
@@ -65,7 +81,8 @@ class Compare(object):
         :return: float (rounded 2 decimal points) of the multiplier difference
         """
 
-        return round(min(a_time, b_time) / max(a_time, b_time),2)
+        # TODO: This is broken, fix it.
+        return round(max(a_time, b_time) / min(a_time, b_time), 2)
 
     def run_times(self):
         """
